@@ -282,7 +282,8 @@ function _apiRouter() {
 }
 
 var _clientPaths = [
-  '/', '/about', '/search'
+  '/', '/about', '/search', '/chat',
+  '/acg/:acgId'
 ];
 
 var fs = require('fs');
