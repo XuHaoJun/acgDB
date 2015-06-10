@@ -13,7 +13,7 @@ var acgTypes = ['anime', 'comic', 'PC', 'PS4', 'PS3', 'xbone', 'xbox360',
 
 var url = configs.mongodb.url;
 
-var acgTypesHasLastDateField = ['anime', 'PC', 'PS4', 'PS3', 'wiiu',
+var acgTypesHasLastDateField = ['anime', 'PC', 'OLG', 'web', 'PS4', 'PS3', 'wiiu',
                                 'xbone', 'xbox360', 'GBA', 'PSP', '3DS'];
 
 function _commonLastDateField(acgType) {
@@ -42,8 +42,15 @@ function _commonLastDateField(acgType) {
 }
 
 function _apiRouter() {
+  var oneHour = 1000 * 60 * 60;
 
   var apiRouter = express.Router();
+  apiRouter.use(function(req, res, next) {
+    if (req.method === 'GET') {
+      res.setHeader('Cache-Control', 'public, max-age='+oneHour);
+    }
+    next();
+  });
 
   _.forEach(acgTypes, function(acgType, index) {
     apiRouter.get('/' + acgType + 's', function(req, res) {
@@ -145,8 +152,8 @@ function _apiRouter() {
       _.forEach(acgTypesHasLastDateField, function(acgType) {
         var collection = db.collection(acgType);
         var dateField = _commonLastDateField(acgType);
-        var sortQuery = {};
-        sortQuery[dateField] = -1;
+        var sortQuery = {id: 1};
+        sortQuery[dateField] = 1;
         var findQuery = {};
         var now = moment();
         findQuery[dateField] = {
@@ -162,15 +169,20 @@ function _apiRouter() {
           .sort(sortQuery)
           .toArrayAsync()
           .then(function(docs) {
-            mergedDocs = mergedDocs.concat(docs);
+            mergedDocs[acgType] = docs;
             if ((acgTypesHasLastDateField.length - 1) === numComplete) {
-              mergedDocs = _.sortBy(mergedDocs, function(d) {
+              var finalMergedDocs = [];
+              _.forEach(acgTypesHasLastDateField, function(t) {
+                finalMergedDocs.push(mergedDocs[t]);
+              });
+              finalMergedDocs = _.flatten(finalMergedDocs);
+              finalMergedDocs = _.sortBy(finalMergedDocs, function(d) {
                 dateField = _commonLastDateField(d.acgType);
                 d.commonLastDate = d[dateField];
                 return new Date(d[dateField]).getTime();
               });
-              mergedDocs.reverse();
-              res.json(mergedDocs);
+              finalMergedDocs.reverse();
+              res.json(finalMergedDocs);
               db.close();
             }
             numComplete += 1;
