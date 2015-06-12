@@ -42,12 +42,12 @@ function _commonLastDateField(acgType) {
 }
 
 function _apiRouter() {
-  var oneHour = 1000 * 60 * 60;
+  var threeMin = 1000 * 60 * 3;
 
   var apiRouter = express.Router();
   apiRouter.use(function(req, res, next) {
     if (req.method === 'GET') {
-      res.setHeader('Cache-Control', 'public, max-age='+oneHour);
+      res.setHeader('Cache-Control', 'public, max-age='+threeMin);
     }
     next();
   });
@@ -225,16 +225,41 @@ function _apiRouter() {
         return;
       }
       var mergedDocs = [];
+      var reqFields = req.query.fields ? JSON.parse(req.query.fields) : null;
+      var reqLimit = req.query.limit ? JSON.parse(req.query.limit) : null;
+      var reqPluck = req.query.pluck ? req.query.pluck : null;
       var langs = {TW: 'nameTW', EN: 'nameEN', JP: 'nameJP'};
       var lang = langs[req.query.lang] || 'nameTW';
       var query = {};
       var numComplete = 0;
+      var findOptions = {};
+      if (reqLimit) {
+        findOptions.limit = reqLimit;
+      }
       query[lang] = new RegExp(req.query.q);
       _.forEach(acgTypes, function(acgType, index) {
         var collection = db.collection(acgType);
-        collection.find(query, {_id: false}).toArray(function(err, docs) {
+        collection.find(query, {_id: false}, findOptions).toArray(function(err, docs) {
           mergedDocs = mergedDocs.concat(docs);
-          if ((acgTypes.length - 1) == numComplete) {
+          if ((acgTypes.length - 1) === numComplete) {
+            mergedDocs = _.sortBy(mergedDocs, 'id');
+            if (reqFields) {
+              mergedDocs = _.map(mergedDocs, function(doc) {
+                var newDoc = {};
+                _.forEach(reqFields, function(f) {
+                  if (doc[f]) {
+                    newDoc[f] = doc[f];
+                  }
+                });
+                return newDoc;
+              });
+            }
+            if (reqLimit) {
+              mergedDocs = _.take(mergedDocs, reqLimit);
+            }
+            if (reqPluck) {
+              mergedDocs = _.pluck(mergedDocs, reqPluck);
+            }
             res.json(mergedDocs);
             db.close();
           }
