@@ -350,6 +350,12 @@ exports.addToExpress = function(app) {
 
   app.use('/api', _apiRouter());
 
+  if (configs.server.prerenderServiceUrl) {
+    app.use(require('prerender-node')
+            .set('prerenderServiceUrl', configs.server.prerenderServiceUrl)
+            .set('protocol', 'https'));
+  }
+
   var i = 0;
   for(i=0; i<_clientPaths.length; i++) {
     app.get(_clientPaths[i], _passPathToClient);

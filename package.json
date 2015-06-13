@@ -4,7 +4,7 @@
   "description": "ACG Database.",
   "main": "app.js",
   "engines": {
-    "iojs": "2.2.1"
+    "iojs": "2.3.0"
   },
   "scripts": {
     "start": "node app.js"
@@ -22,7 +22,8 @@
     "lodash": "^3.9.3",
     "moment": "^2.10.3",
     "mongodb": "^2.0.33",
-    "morgan": "^1.5.3"
+    "morgan": "^1.6.0",
+    "prerender-node": "^1.2.1"
   },
   "author": "XuHaoJun",
   "license": "Apache 2.0"
