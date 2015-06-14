@@ -1,4 +1,5 @@
 var _ = require('lodash');
+var sm = require('sitemap');
 var moment = require('moment');
 var express = require('express');
 var Promise = require('bluebird');
@@ -191,6 +192,35 @@ function _apiRouter() {
     });
   });
 
+  apiRouter.get('/acgs/pages/:numPage', function(req, res) {
+    var numPage = parseInt(req.params.numPage);
+    var numPageACG = 20;
+    MongoClient.connect(url, function(err, db) {
+      if (!_.isNull(err)) {
+        res.json(null);
+        db.close();
+        return;
+      }
+      var mergedDocs = [];
+      var numComplete = 0;
+      var skip = (numPage - 1) * numPageACG;
+      var limit = numPageACG;
+      var options = {skip: skip, limit: limit, sort: {id: 1}};
+      _.forEach(acgTypes, function(acgType) {
+        var collection = db.collection(acgType);
+        collection.find({}, {_id: false}, options).toArray(function(err, docs) {
+          mergedDocs = mergedDocs.concat(docs);
+          if ((acgTypes.length - 1) == numComplete) {
+            mergedDocs = _.take(_.sortBy(mergedDocs, 'id'), numPageACG);
+            res.json(mergedDocs);
+            db.close();
+          }
+          numComplete += 1;
+        });
+      });
+    });
+  });
+
   apiRouter.get('/acgs', function(req, res) {
     MongoClient.connect(url, function(err, db) {
       if (!_.isNull(err)) {
@@ -204,7 +234,7 @@ function _apiRouter() {
       _.forEach(acgTypes, function(acgType) {
         var collection = db.collection(acgType);
         collection.find({}, {_id: false}).toArray(function(err, docs) {
-          acgs[acgType] = docs;
+          acgs[acgType] = _.sortBy(docs, 'id');
           if ((acgTypes.length - 1) == numComplete) {
             _.forEach(acgTypes, function(atype) {
               mergedDocs = mergedDocs.concat(acgs[atype]);
@@ -320,7 +350,7 @@ function _apiRouter() {
 
 var _clientPaths = [
   '/', '/about', '/search', '/chat',
-  '/acg/:acgId'
+  '/acg/:acgId', '/acgs/pages/:numPage'
 ];
 
 var fs = require('fs');
@@ -335,7 +365,7 @@ function _passPathToClient(req, res) {
   res.contentType('text/html');
   res.send(
     _clientTemplate.render(
-      {clientRouterPath: req.path,
+      {clientRouterPath: req.originalUrl,
        enableManifest: process.env.NODE_ENV === 'production' ? true : false,
        hasGoogleAnalyticsTracking: (configs.server.googleAnalyticsTracking ?
                                     true : false),
@@ -343,6 +373,9 @@ function _passPathToClient(req, res) {
       }
     )
   );
+}
+
+function _handleSitemap() {
 }
 
 exports.addToExpress = function(app) {
@@ -360,4 +393,19 @@ exports.addToExpress = function(app) {
   for(i=0; i<_clientPaths.length; i++) {
     app.get(_clientPaths[i], _passPathToClient);
   }
+  var sitemap = sm.createSitemap ({
+    hostname: configs.server.hostname,
+    urls: [
+      {url: '/', changefreq: 'daily'},
+      {url: '/about/'},
+      {url: '/search/'},
+      {url: '/chat/'},
+      {url: '/acgs/pages/1/', changefreq: 'daily'}
+    ]
+  });
+  sitemap = sitemap.toString();
+  app.get('/sitemap.xml', function(req, res) {
+    res.header('Content-Type', 'application/xml');
+    res.send(sitemap);
+  });
 };

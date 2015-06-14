@@ -23,7 +23,8 @@
     "moment": "^2.10.3",
     "mongodb": "^2.0.33",
     "morgan": "^1.6.0",
-    "prerender-node": "^1.2.1"
+    "prerender-node": "^1.2.1",
+    "sitemap": "^0.8.1"
   },
   "author": "XuHaoJun",
   "license": "Apache 2.0"

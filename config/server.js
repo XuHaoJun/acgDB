@@ -8,6 +8,7 @@ var serverConfig = {
       proxy: true,
       header: 'x-forwarded-for'
     },
+    hostname: process.env.BASE_URI || 'http://localhost:3000',
     port: process.env.PORT || 3000,
     clientTemplate: '../acgDBClient/dist/index.mustache',
     staticDirectory: '../acgDBClient/dist',
@@ -24,6 +25,7 @@ var serverConfig = {
       proxy: true,
       header: 'x-forwarded-for'
     },
+    hostname: process.env.BASE_URI || 'http://localhost:3000',
     port: process.env.PORT || 3000,
     clientTemplate: 'public/index.mustache',
     staticDirectory: 'public',
