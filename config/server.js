@@ -14,7 +14,8 @@ var serverConfig = {
     staticDirectory: '../acgDBClient/dist',
     faviconPath: '../acgDBClient/dist/favicon.ico',
     prerenderServiceUrl: process.env.PRERENDER_SERVICE_URL || 'http://service.prerender.io/',
-    googleAnalyticsTracking: process.env.GOOGLE_ANALYTICS_TRACKING || null
+    googleAnalyticsTracking: process.env.GOOGLE_ANALYTICS_TRACKING || null,
+    disqusShortname: null
   },
   production: {
     appName: 'acgDB',
@@ -31,7 +32,8 @@ var serverConfig = {
     staticDirectory: 'public',
     faviconPath: 'public/favicon.ico',
     prerenderServiceUrl: process.env.PRERENDER_SERVICE_URL || 'http://service.prerender.io/',
-    googleAnalyticsTracking: process.env.GOOGLE_ANALYTICS_TRACKING || null
+    googleAnalyticsTracking: process.env.GOOGLE_ANALYTICS_TRACKING || null,
+    disqusShortname: 'acgDB'
   }
 };
 

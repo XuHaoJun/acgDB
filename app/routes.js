@@ -43,7 +43,7 @@ function _commonLastDateField(acgType) {
 }
 
 function _apiRouter() {
-  var threeMin = 1000 * 60 * 3;
+  var threeMin = 60 * 3;
 
   var apiRouter = express.Router();
   apiRouter.use(function(req, res, next) {
@@ -52,6 +52,14 @@ function _apiRouter() {
     }
     next();
   });
+
+  if (configs.server.disqusShortname) {
+    var oneDay = 60 * 60 * 24;
+    apiRouter.get('/disqusShortname', function(req, res) {
+      res.setHeader('Cache-Control', 'public, max-age='+oneDay);
+      res.json(configs.server.disqusShortname);
+    });
+  }
 
   _.forEach(acgTypes, function(acgType, index) {
     apiRouter.get('/' + acgType + 's', function(req, res) {
