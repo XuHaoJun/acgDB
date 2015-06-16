@@ -127,6 +127,17 @@ lang | 可選 | 可用值為其一 : [TW, EN, JP] 分別代表 中文、英文�
 
 http://acgdb.herokuapp.com/api/acgs/search?q=Cat&lang=EN
 
+# GET api/lastACGs/pages/:numPage
+最新 ACG 作品資料並限制分頁。
+
+參數 | 選填類型 | 說明 |
+------- | ---------------- | ----------:
+numPage | 必要 | 數字
+
+### 範例
+
+http://acgdb.herokuapp.com/api/lastACGs/pages/1
+
 # GET api/db/collection/:acgType/count
 回傳某個 ACG 類型的所有作品數量。
 
