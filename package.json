@@ -17,11 +17,11 @@
     "express": "^4.12.4",
     "express-session": "^1.11.3",
     "hogan": "^1.0.2",
-    "immutable": "^3.7.3",
+    "immutable": "^3.7.4",
     "killable": "^1.0.0",
     "lodash": "^3.9.3",
     "moment": "^2.10.3",
-    "mongodb": "^2.0.33",
+    "mongodb": "^2.0.34",
     "morgan": "^1.6.0",
     "prerender-node": "^1.2.1",
     "sitemap": "^0.8.1"
