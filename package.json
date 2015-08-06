@@ -4,23 +4,23 @@
   "description": "ACG Database.",
   "main": "app.js",
   "engines": {
-    "iojs": "2.3.4"
+    "iojs": "3.0.0"
   },
   "scripts": {
     "start": "node app.js"
   },
   "dependencies": {
     "bluebird": "^2.9.34",
-    "body-parser": "^1.13.2",
+    "body-parser": "^1.13.3",
     "compression": "^1.5.1",
-    "connect-redis": "^2.4.0",
-    "express": "^4.13.1",
+    "connect-redis": "^2.4.1",
+    "express": "^4.13.3",
     "express-session": "^1.11.3",
     "hogan": "^1.0.2",
     "immutable": "^3.7.4",
     "killable": "^1.0.0",
-    "lodash": "^3.10.0",
-    "moment": "^2.10.3",
+    "lodash": "^3.10.1",
+    "moment": "^2.10.6",
     "mongodb": "^2.0.39",
     "morgan": "^1.6.1",
     "prerender-node": "^1.3.0",
